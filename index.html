@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+      integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+  </head>
+  <body class="bg-cyan-700">
+    <div class="h-[80vh] bg-sky-700 border-2 border-black w-[60vh] flex flex-col mx-[70vh] mt-[30px] rounded-xl">
+    <h1 class="text-1xl font-bold underline text-center text-1xl">TO DO APP</h1>
+    <div class="flex flex-col gap-2 justify-center items-center">
+      <input
+        type="text"
+        id="app_input"
+        class="border-2 border-black rounded-xl px-2"
+      />
+      <button
+        id="app_btn"
+        class="border-2 border-black rounded-2xl bg-cover shadow-lg shadow-black bg-orange-300 px-2"
+      >
+        Submit
+      </button>
+      <div>
+        <ul
+          id="app_list"
+          class="h-[60vh] overflow-y-auto font-bold flex flex-col gap-2"
+        ></ul>
+      </div>
+    </div>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const app_input = document.getElementById("app_input");
+        const app_btn = document.getElementById("app_btn");
+        const app_list = document.getElementById("app_list");
+
+        let app_array = JSON.parse(localStorage.getItem("app_storage")) || [];
+        app_array.forEach((app) => {
+          createapp(app);
+        });
+
+        app_btn.addEventListener("click", app_object);
+
+        document.addEventListener("keypress", function (e) {
+          if (e.key == "Enter") app_object();
+        });
+
+        function app_object() {
+          let app_value = app_input.value;
+          if (app_value != "") {
+            app = {
+              id: Date.now(),
+              text: app_value,
+              complete: false,
+            };
+            app_array.push(app);
+            localStorage.setItem("app_storage", JSON.stringify(app_array));
+
+            console.log(app_array);
+            createapp(app);
+            app_input.value = "";
+          }
+        }
+
+        function createapp(app) {
+          let li = document.createElement("li");
+          if (app.complete) {
+            li.setAttribute("class", "line-through");
+          }
+          const inputtext = `<div class ="flex justify-between w-64 bg-orange-300 rounded-2xl px-2 py-2 text-xl shadow-md shadow-black">
+                <p>${app.text}<p><div class="flex gap-2 items-center"><i class="complete fa-solid fa-toggle-on"></i><i class=" delete_task fa-solid fa-trash"></i></div>
+                    </div>`;
+
+          li.innerHTML = inputtext;
+          app_list.appendChild(li);
+
+          li.querySelector(".complete").addEventListener("click", function () {
+            app.complete != app.complete;
+            li.classList.toggle("line-through");
+          });
+
+          li.querySelector(".delete_task").addEventListener(
+            "click",
+            function () {
+              app_array = app_array.filter((x) => {
+                x.id !== app.id;
+              });
+              localStorage.setItem("app_storage", JSON.stringify(app_array));
+              li.remove();
+            }
+          );
+        }
+      });
+    </script>
+  </body>
+</html>
